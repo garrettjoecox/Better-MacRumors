@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Better MacRumors</title>
+  </head>
+  <body ng-app="macrumors" ng-controller="main as ctrl">
+    <div ng-repeat="article in ctrl.articles">
+      <h2>{{article.title}}</h2>
+      <div ng-bind-html="article.content"></div>
+    </div>
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script>
+      angular.module('macrumors', [])
+        .controller('main', Controller);
+
+      function Controller($http, $sce) {
+        var self = this;
+
+        $http.get('/api')
+          .then(function(response) {
+            response.data.forEach(function(article) {
+              article.content = $sce.trustAsHtml(article.content);
+            });
+            self.articles = response.data;
+          });
+      }
+    </script>
+  </body>
+</html>
